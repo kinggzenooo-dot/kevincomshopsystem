@@ -357,6 +357,36 @@
       gap: 40px;
       margin-bottom: 40px;
     }
+
+    @media (max-width: 600px) {
+      .hero-section {
+        padding: 40px 14px 30px !important;
+      }
+      .hero-cta-group {
+        flex-direction: column !important;
+        width: 100% !important;
+      }
+      .hero-cta-group .btn-cyber {
+        width: 100% !important;
+      }
+      .hero-stats {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+      }
+      .hero-stat-card {
+        padding: 12px 8px !important;
+      }
+      .hero-stat-num {
+        font-size: 1.4rem !important;
+      }
+      .section-container {
+        padding: 30px 14px !important;
+      }
+      .section-title {
+        font-size: 1.6rem !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -371,7 +401,7 @@
       Step into the future of cyber gaming. High-refresh 360Hz QD-OLED setups, RTX 4090 Monster Rigs, 10Gbps dedicated fiber, soundproof streaming booths, and gourmet seat delivery.
     </p>
     
-    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+    <div class="hero-cta-group" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
       <button class="btn-cyber btn-cyber-primary" onclick="openReserveModal()">
         🖥️ RESERVE PC NOW
       </button>

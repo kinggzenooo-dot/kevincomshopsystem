@@ -60,6 +60,32 @@
     @media (max-width: 1100px) {
       .staff-grid-layout { grid-template-columns: 1fr; }
     }
+    @media (max-width: 600px) {
+      .staff-header-banner {
+        padding: 16px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .staff-title {
+        font-size: 1.35rem;
+      }
+      .metrics-row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .metric-pill {
+        min-width: 0;
+        padding: 8px 10px;
+      }
+      .metric-pill .val {
+        font-size: 1.25rem;
+      }
+      .pc-staff-card {
+        padding: 14px;
+      }
+    }
 
     .pc-monitor-grid {
       display: grid;

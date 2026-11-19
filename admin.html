@@ -81,6 +81,22 @@
       font-weight: 800;
       margin-top: 5px;
     }
+    .admin-analytics-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
+    @media (max-width: 900px) {
+      .admin-analytics-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      .admin-header {
+        padding: 16px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
@@ -135,7 +151,7 @@
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+      <div class="admin-analytics-grid">
         <div class="cyber-card">
           <h3 class="font-display" style="font-size: 1.2rem; color: #fff; margin-bottom: 20px;">REAL-TIME REVENUE & STATION ACTIVITY</h3>
           <div style="height: 240px; background: rgba(0, 240, 255, 0.02); border: 1px dashed var(--border-cyber); border-radius: var(--radius-sm); display: flex; align-items: flex-end; justify-content: space-around; padding: 20px;">
