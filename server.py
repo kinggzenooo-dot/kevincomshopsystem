@@ -47,14 +47,14 @@ def load_env():
     return env
 
 CONFIG = load_env()
-PORT = int(CONFIG.get("PORT", 5000))
+PORT = int(os.environ.get("PORT") or CONFIG.get("PORT", 5000))
 
 # Clean Supabase URL if there was a typo like hhttps://
-raw_supa_url = CONFIG.get("SUPABASE_URL", "https://uiingbpzfgxmxlwtwfzy.supabase.co")
+raw_supa_url = os.environ.get("SUPABASE_URL") or CONFIG.get("SUPABASE_URL", "https://uiingbpzfgxmxlwtwfzy.supabase.co")
 if raw_supa_url.startswith("hhttps://"):
     raw_supa_url = "https://" + raw_supa_url[9:]
 SUPABASE_URL = raw_supa_url.rstrip("/")
-SUPABASE_KEY = CONFIG.get("SUPABASE_KEY", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or CONFIG.get("SUPABASE_KEY", "")
 
 # Initial Default Dataset
 DEFAULT_DATABASE = {

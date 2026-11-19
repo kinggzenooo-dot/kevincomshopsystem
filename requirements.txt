@@ -1,0 +1,5 @@
+# Render Python Dependencies for Vens ComShop
+# Built to support both python server.py and uvicorn backend.app:app
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
