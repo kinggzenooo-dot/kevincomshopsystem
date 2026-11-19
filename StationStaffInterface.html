@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vens ComShop — Station & Floor Staff Command Console</title>
+  
+  <link rel="stylesheet" href="css/cyber-core.css">
+
+  <style>
+    .staff-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .staff-header-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .staff-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: #fff;
+      font-weight: 800;
+    }
+    .metrics-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .metric-pill {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .metric-pill .val {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Grid Layout */
+    .staff-grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 25px;
+    }
+    @media (max-width: 1100px) {
+      .staff-grid-layout { grid-template-columns: 1fr; }
+    }
+
+    .pc-monitor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 18px;
+    }
+    .pc-staff-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition-normal);
+    }
+    .pc-staff-card.status-active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+    }
+    .pc-staff-card.status-lowtime {
+      border-color: var(--amber);
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
+      animation: flash-border 1.5s infinite;
+    }
+    @keyframes flash-border {
+      0%, 100% { border-color: var(--amber); }
+      50% { border-color: rgba(255, 183, 3, 0.2); }
+    }
+    .pc-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .pc-number-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--green);
+      text-align: center;
+      margin: 10px 0;
+      letter-spacing: 1px;
+    }
+    .timer-display.low-time {
+      color: var(--amber);
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--cyan);
+      width: 0%;
+      transition: width 1s linear;
+    }
+
+    .pc-card-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .btn-action-small {
+      flex: 1;
+      padding: 6px 4px;
+      font-size: 0.75rem;
+      font-family: var(--font-sub);
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition-fast);
+    }
+    .btn-action-small:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* Sidebar Panels */
+    .staff-sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="staff-container">
+    
+    <!-- Top Header Banner -->
+    <div class="staff-header-banner">
+      <div>
+        <div style="font-family: var(--font-sub); color: var(--cyan); font-weight: 700; letter-spacing: 1px; font-size: 0.85rem;">FLOOR MANAGEMENT CONSOLE</div>
+        <h1 class="staff-title">STATION MONITOR & SESSION CONTROL</h1>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="metrics-row">
+        <div class="metric-pill">
+          <div class="val text-cyan" id="m-active-count">0</div>
+          <div class="hero-stat-label">Active PCs</div>
+        </div>
+        <div class="metric-pill">
+          <div class="val text-green" id="m-idle-count">0</div>
+          <div class="hero-stat-label">Available</div>
+        </div>
+        <div class="metric-pill">
+          <div class="val text-amber" id="m-reserved-count">0</div>
+          <div class="hero-stat-label">Reserved</div>
+        </div>
+        <div class="metric-pill">
+          <div class="val text-magenta" id="m-orders-count">0</div>
+          <div class="hero-stat-label">Seat Orders</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar & Search -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+      <div class="filter-tabs" id="staff-zone-filter" style="margin-bottom:0;">
+        <button class="filter-btn active" data-zone="all">All Stations (30)</button>
+        <button class="filter-btn" data-zone="active">Active Only</button>
+        <button class="filter-btn" data-zone="VIP Cyber Lounge">VIP Lounge</button>
+        <button class="filter-btn" data-zone="Tournament Arena">Tournament</button>
+        <button class="filter-btn" data-zone="Streaming Booth">Streaming</button>
+        <button class="filter-btn" data-zone="Standard Zone">Standard</button>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="staff-search-input" class="cyber-input" placeholder="Search PC code or gamer..." style="width: 240px;" onkeyup="renderStaffGrid()">
+        <button class="btn-cyber btn-cyber-primary" onclick="openStartSessionModal()">
+          ⚡ NEW SESSION
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="staff-grid-layout">
+      
+      <!-- PC Grid -->
+      <div class="pc-monitor-grid" id="staff-pc-grid">
+        <!-- Dynamic PC Cards via JS -->
+      </div>
+
+      <!-- Right Sidebar Panel -->
+      <div class="staff-sidebar-panel">
+        
+        <!-- Pending Seat Orders -->
+        <div class="cyber-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 class="font-display" style="font-size: 1.1rem; color: #fff;">🍔 SEAT FOOD ORDERS</h3>
+            <span class="cyber-badge badge-active" id="seat-orders-badge">0 Pending</span>
+          </div>
+          <div id="staff-seat-orders-list" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Dynamic Seat Orders -->
+          </div>
+        </div>
+
+        <!-- Online PC Reservations -->
+        <div class="cyber-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 class="font-display" style="font-size: 1.1rem; color: #fff;">📅 ONLINE BOOKINGS</h3>
+            <span class="cyber-badge badge-reserved" id="res-queue-badge">0 Bookings</span>
+          </div>
+          <div id="staff-reservations-list" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Dynamic Reservations -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- START SESSION MODAL -->
+  <div class="cyber-modal-overlay" id="start-session-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">⚡ START PC SESSION</h3>
+        <button class="cyber-modal-close" data-close-modal="start-session-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body">
+        <form id="start-session-form" onsubmit="handleStartSessionSubmit(event)">
+          <div class="cyber-input-group">
+            <label>Select Target Station</label>
+            <select id="start-pc-select" class="cyber-select" required></select>
+          </div>
+          <div class="cyber-input-group">
+            <label>Customer Name / Gamer Handle</label>
+            <input type="text" id="start-cust-name" class="cyber-input" placeholder="e.g. Alex Mercer" required>
+          </div>
+          <div class="cyber-input-group">
+            <label>Select Rate Package or Custom Duration</label>
+            <select id="start-pkg-select" class="cyber-select" required></select>
+          </div>
+          <button type="submit" class="btn-cyber btn-cyber-primary" style="width: 100%; margin-top: 15px;">
+            🚀 LAUNCH PC SESSION NOW
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXTEND TIME MODAL -->
+  <div class="cyber-modal-overlay" id="extend-session-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">⏱️ EXTEND PC TIME</h3>
+        <button class="cyber-modal-close" data-close-modal="extend-session-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body">
+        <div id="extend-pc-info" style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 15px; color: var(--cyan);">
+          Target Station: PC-01
+        </div>
+        <input type="hidden" id="extend-target-pccode">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+          <button class="btn-cyber btn-cyber-secondary" onclick="doExtendSession(30)">+30 Mins</button>
+          <button class="btn-cyber btn-cyber-primary" onclick="doExtendSession(60)">+1 Hour</button>
+          <button class="btn-cyber btn-cyber-secondary" onclick="doExtendSession(120)">+2 Hours</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Core -->
+  <script src="js/comshop-data.js"></script>
+  <script src="js/comshop-ui.js"></script>
+
+  <script>
+    let activeFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Authorization Guard
+      const user = window.VensStore ? window.VensStore.getCurrentUser() : null;
+      if (!user) {
+        window.location.href = 'login.html?redirect=StationStaffInterface.html&msg=Sign+in+required.+Floor+Staff+access+only.';
+        return;
+      }
+      if (!user.role) {
+        alert('Access Denied: Floor Staff or Administrator privileges required.');
+        window.location.href = 'customer.html';
+        return;
+      }
+
+      renderStaffGrid();
+      renderSidebarData();
+      populateStartDropdowns();
+
+      // Listeners
+      window.addEventListener('comshop-data-updated', () => {
+        renderStaffGrid();
+        renderSidebarData();
+        populateStartDropdowns();
+      });
+
+      window.addEventListener('comshop-timer-tick', () => {
+        updateGridTimers();
+      });
+
+      // Filter tabs
+      document.getElementById('staff-zone-filter').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          document.querySelectorAll('#staff-zone-filter .filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeFilter = e.target.getAttribute('data-zone');
+          renderStaffGrid();
+        }
+      });
+    });
+
+    function renderStaffGrid() {
+      const grid = document.getElementById('staff-pc-grid');
+      let stations = window.VensStore.getStations();
+      const search = document.getElementById('staff-search-input').value.toLowerCase();
+
+      // Metrics
+      const activePcs = stations.filter(s => s.status === 'active');
+      document.getElementById('m-active-count').innerText = activePcs.length;
+      document.getElementById('m-idle-count').innerText = stations.filter(s => s.status === 'idle').length;
+      document.getElementById('m-reserved-count').innerText = stations.filter(s => s.status === 'reserved').length;
+      document.getElementById('m-orders-count').innerText = window.VensStore.getOrders().filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+
+      // Filtering
+      if (activeFilter === 'active') {
+        stations = stations.filter(s => s.status === 'active');
+      } else if (activeFilter !== 'all') {
+        stations = stations.filter(s => s.zone === activeFilter);
+      }
+
+      if (search) {
+        stations = stations.filter(s => 
+          s.code.toLowerCase().includes(search) || 
+          (s.activeSession && s.activeSession.customerName.toLowerCase().includes(search))
+        );
+      }
+
+      grid.innerHTML = stations.map(st => {
+        const isActive = st.status === 'active' && st.activeSession;
+        const remSecs = isActive ? st.activeSession.remainingSeconds : 0;
+        const isLowTime = isActive && remSecs <= 900; // < 15 mins
+
+        let badgeClass = 'badge-available';
+        let statusText = 'AVAILABLE';
+        if (st.status === 'active') {
+          badgeClass = isLowTime ? 'badge-warning' : 'badge-occupied';
+          statusText = 'IN USE';
+        } else if (st.status === 'reserved') {
+          badgeClass = 'badge-reserved';
+          statusText = 'RESERVED';
+        } else if (st.status === 'maintenance') {
+          badgeClass = 'badge-maintenance';
+          statusText = 'OFFLINE';
+        }
+
+        const totalSecs = isActive ? (st.activeSession.durationMinutes * 60) : 1;
+        const pct = isActive ? Math.max(0, Math.min(100, (remSecs / totalSecs) * 100)) : 0;
+
+        return `
+          <div class="pc-staff-card ${isActive ? (isLowTime ? 'status-lowtime' : 'status-active') : ''}">
+            <div class="pc-card-header">
+              <span class="pc-number-title">${st.code}</span>
+              <span class="cyber-badge ${badgeClass}">${statusText}</span>
+            </div>
+
+            <div style="font-size:0.75rem; color:var(--cyan); font-family:var(--font-sub); font-weight:700;">
+              ${st.zone} (₱${st.ratePerHour}/hr)
+            </div>
+
+            ${isActive ? `
+              <div style="font-size:0.85rem; color:#fff; font-weight:600; margin-top:6px;">
+                👤 ${st.activeSession.customerName}
+              </div>
+              <div class="timer-display ${isLowTime ? 'low-time' : ''}" id="staff-timer-${st.code}">
+                ${window.VensStore.formatTime(remSecs)}
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="staff-bar-${st.code}" style="width: ${pct}%;"></div>
+              </div>
+            ` : `
+              <div style="text-align:center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem;">
+                ${st.status === 'maintenance' ? '🔧 Under Repair' : st.status === 'reserved' ? '📅 Reserved for User' : 'Station Ready'}
+              </div>
+            `}
+
+            <div class="pc-card-actions">
+              ${isActive ? `
+                <button class="btn-action-small" onclick="openExtendModal('${st.code}')">⏱️ +TIME</button>
+                <button class="btn-action-small" style="color:var(--red);" onclick="confirmEndSession('${st.code}')">🛑 LOG OFF</button>
+              ` : `
+                <button class="btn-action-small" style="color:var(--green);" onclick="quickStartForPC('${st.code}')">⚡ START</button>
+                <button class="btn-action-small" onclick="togglePCMaintenance('${st.code}')">🔧 EDIT</button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateGridTimers() {
+      const stations = window.VensStore.getStations();
+      stations.forEach(st => {
+        if (st.status === 'active' && st.activeSession) {
+          const timerEl = document.getElementById(`staff-timer-${st.code}`);
+          const barEl = document.getElementById(`staff-bar-${st.code}`);
+          if (timerEl) {
+            timerEl.innerText = window.VensStore.formatTime(st.activeSession.remainingSeconds);
+            if (st.activeSession.remainingSeconds <= 900) {
+              timerEl.classList.add('low-time');
+            }
+          }
+          if (barEl) {
+            const totalSecs = st.activeSession.durationMinutes * 60;
+            const pct = Math.max(0, Math.min(100, (st.activeSession.remainingSeconds / totalSecs) * 100));
+            barEl.style.width = pct + '%';
+          }
+        }
+      });
+    }
+
+    function renderSidebarData() {
+      // Seat Food Orders
+      const orders = window.VensStore.getOrders().filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      document.getElementById('seat-orders-badge').innerText = `${orders.length} Pending`;
+      const ordersList = document.getElementById('staff-seat-orders-list');
+
+      if (orders.length === 0) {
+        ordersList.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding: 10px;">No pending seat orders.</div>`;
+      } else {
+        ordersList.innerHTML = orders.map(o => `
+          <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:10px; border-radius:var(--radius-sm);">
+            <div style="display:flex; justify-content:space-between; font-weight:700; color:#fff;">
+              <span>Seat ${o.stationCode}</span>
+              <span class="text-cyan">₱${o.total}</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin:4px 0;">
+              ${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}
+            </div>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              ${o.status === 'pending' ? `<button class="btn-action-small" onclick="updateOrderStatus('${o.id}', 'preparing')">👨‍🍳 PREPARE</button>` : ''}
+              ${o.status === 'preparing' ? `<button class="btn-action-small" style="color:var(--cyan);" onclick="updateOrderStatus('${o.id}', 'delivering')">🚴 DELIVER</button>` : ''}
+              ${o.status === 'delivering' ? `<button class="btn-action-small" style="color:var(--green);" onclick="updateOrderStatus('${o.id}', 'delivered')">✅ DONE</button>` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Online Reservations
+      const resList = window.VensStore.getReservations().filter(r => r.status === 'confirmed');
+      document.getElementById('res-queue-badge').innerText = `${resList.length} Active`;
+      const resContainer = document.getElementById('staff-reservations-list');
+
+      if (resList.length === 0) {
+        resContainer.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding: 10px;">No upcoming reservations.</div>`;
+      } else {
+        resContainer.innerHTML = resList.map(r => `
+          <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:10px; border-radius:var(--radius-sm);">
+            <div style="display:flex; justify-content:space-between; font-weight:700; color:#fff;">
+              <span>${r.customerName}</span>
+              <span class="text-green">${r.pcCode}</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary);">
+              📅 ${r.date} @ ${r.startTime} (${r.durationHours} hrs)
+            </div>
+            <button class="btn-action-small" style="width:100%; margin-top:6px; color:var(--cyan);" onclick="checkInReservation('${r.pcCode}', '${r.customerName}', ${r.durationHours * 60})">
+              ✅ CHECK-IN TO STATION
+            </button>
+          </div>
+        `).join('');
+      }
+    }
+
+    function populateStartDropdowns() {
+      const stations = window.VensStore.getStations().filter(s => s.status !== 'active');
+      const packages = window.VensStore.getPackages();
+
+      const pcSelect = document.getElementById('start-pc-select');
+      pcSelect.innerHTML = stations.map(s => `<option value="${s.code}">${s.code} (${s.zone})</option>`).join('');
+
+      const pkgSelect = document.getElementById('start-pkg-select');
+      pkgSelect.innerHTML = packages.map(p => `<option value="${p.id}">${p.name} — ₱${p.price} (${p.hours} hrs)</option>`).join('');
+    }
+
+    function openStartSessionModal() {
+      window.openCyberModal('start-session-modal');
+    }
+
+    function quickStartForPC(pcCode) {
+      document.getElementById('start-pc-select').value = pcCode;
+      openStartSessionModal();
+    }
+
+    function handleStartSessionSubmit(e) {
+      e.preventDefault();
+      const pcCode = document.getElementById('start-pc-select').value;
+      const custName = document.getElementById('start-cust-name').value;
+      const pkgId = document.getElementById('start-pkg-select').value;
+
+      if (window.VensStore.startSession(pcCode, custName, 60, pkgId)) {
+        window.closeCyberModal('start-session-modal');
+        window.showToast(`Session Started on ${pcCode} for ${custName}`, 'success');
+        document.getElementById('start-session-form').reset();
+      }
+    }
+
+    function openExtendModal(pcCode) {
+      document.getElementById('extend-target-pccode').value = pcCode;
+      document.getElementById('extend-pc-info').innerText = `Target Station: ${pcCode}`;
+      window.openCyberModal('extend-session-modal');
+    }
+
+    function doExtendSession(mins) {
+      const pcCode = document.getElementById('extend-target-pccode').value;
+      if (window.VensStore.extendSession(pcCode, mins, 'Cash')) {
+        window.closeCyberModal('extend-session-modal');
+        window.showToast(`Extended +${mins} Mins for ${pcCode}`, 'success');
+      }
+    }
+
+    function confirmEndSession(pcCode) {
+      if (confirm(`Force log-off and complete session for ${pcCode}?`)) {
+        window.VensStore.endSession(pcCode);
+        window.showToast(`Session Logged Off for ${pcCode}`, 'info');
+      }
+    }
+
+    function togglePCMaintenance(pcCode) {
+      const st = window.VensStore.getStations().find(s => s.code === pcCode);
+      if (!st) return;
+      const newStatus = st.status === 'maintenance' ? 'idle' : 'maintenance';
+      window.VensStore.updateStationStatus(pcCode, newStatus);
+      window.showToast(`${pcCode} status set to ${newStatus.toUpperCase()}`, 'info');
+    }
+
+    function updateOrderStatus(orderId, status) {
+      window.VensStore.updateOrderStatus(orderId, status);
+      window.showToast(`Order Status updated to ${status.toUpperCase()}`, 'success');
+    }
+
+    function checkInReservation(pcCode, custName, mins) {
+      window.VensStore.startSession(pcCode, custName, mins);
+      window.showToast(`Customer ${custName} checked into ${pcCode}!`, 'success');
+    }
+  </script>
+</body>
+</html>

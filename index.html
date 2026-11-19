@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vens ComShop — Unified Cyber Gaming Hub</title>
+  
+  <link rel="stylesheet" href="css/cyber-core.css">
+  
+  <style>
+    .hub-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .hub-hero {
+      text-align: center;
+      padding: 40px 20px 50px;
+      background: radial-gradient(circle at 50% 30%, rgba(0, 240, 255, 0.12) 0%, transparent 65%);
+      position: relative;
+    }
+
+    .hub-badge {
+      display: inline-block;
+      font-family: var(--font-sub);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--cyan);
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px var(--cyan-glow);
+    }
+
+    .hub-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #fff 30%, var(--cyan) 70%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hub-subtitle {
+      max-width: 800px;
+      margin: 0 auto 35px;
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+
+    /* Live HUD Bar */
+    .hud-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+
+    .hud-pill {
+      background: rgba(10, 13, 22, 0.8);
+      border: 1px solid var(--border-cyber);
+      border-radius: 30px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-sub);
+      font-size: 0.85rem;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    /* Portal Grid */
+    .portals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 60px;
+    }
+
+    .portal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px 26px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-normal);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, var(--cyan)), transparent);
+      opacity: 0.6;
+      transition: var(--transition-normal);
+    }
+
+    .portal-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--card-accent, var(--cyan));
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .portal-card:hover::before {
+      opacity: 1;
+      height: 4px;
+    }
+
+    .portal-icon {
+      font-size: 3rem;
+      margin-bottom: 18px;
+      display: inline-block;
+    }
+
+    .portal-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .portal-desc {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-bottom: 25px;
+      flex: 1;
+    }
+
+    .portal-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .instructor-guide-box {
+      background: rgba(10, 13, 22, 0.9);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hub-container">
+    
+    <!-- Hero Banner -->
+    <header class="hub-hero">
+      <div class="hub-badge">⚡ UNIFIED SINGLE-LINK SYSTEM GATEWAY</div>
+      <h1 class="hub-title">VENS COMSHOP MATRIX</h1>
+      <p class="hub-subtitle">
+        High-Performance Internet Cafe & Esports Gaming Center Management Suite. Complete integration across Online Booking, Cashier POS, Station Staff Floor Controls, Executive Analytics, and Cloud Supabase Sync.
+      </p>
+
+      <!-- Live Heartbeat HUD -->
+      <div class="hud-bar">
+        <div class="hud-pill">
+          <span class="status-dot dot-active"></span>
+          <span>Python Backend: <strong class="text-green" id="hud-backend-status">Online (Port 5000)</strong></span>
+        </div>
+        <div class="hud-pill">
+          <span class="status-dot dot-inuse"></span>
+          <span>Supabase Cloud: <strong class="text-cyan" id="hud-supabase-status">Checking...</strong></span>
+        </div>
+        <div class="hud-pill">
+          <span>🖥️ Active Stations: <strong class="text-cyan" id="hud-active-stations">Loading...</strong></span>
+        </div>
+        <div class="hud-pill">
+          <span>👤 Active User: <strong class="text-magenta" id="hud-active-user">Guest Gamer</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 4 Core Portals + Auth Gateway -->
+    <section class="portals-grid">
+      
+      <!-- 1. Customer Website -->
+      <a href="customer.html" class="portal-card" style="--card-accent: var(--cyan);">
+        <span class="cyber-badge badge-active portal-badge">PUBLIC PORTAL</span>
+        <div class="portal-icon">🌐</div>
+        <h2 class="portal-title">CUSTOMER LOUNGE & BOOKING</h2>
+        <p class="portal-desc">
+          Browse 30 battle-tested esports stations, check live PC availability, book gaming hours in advance, and order delicious food & iced drinks delivered right to your desk.
+        </p>
+        <span class="btn-cyber btn-cyber-primary" style="align-self: flex-start;">
+          LAUNCH CUSTOMER PORTAL →
+        </span>
+      </a>
+
+      <!-- 2. Station & Floor Staff -->
+      <a href="StationStaffInterface.html" class="portal-card" style="--card-accent: var(--purple);">
+        <span class="cyber-badge badge-vip portal-badge">FLOOR OPS</span>
+        <div class="portal-icon">🖥️</div>
+        <h2 class="portal-title">STATION STAFF CONSOLE</h2>
+        <p class="portal-desc">
+          Monitor all 30 PC monitors with real-time countdown clocks, low-time alerts, remote station controls, technician logs, and customer seat-delivery food orders.
+        </p>
+        <span class="btn-cyber btn-cyber-secondary" style="align-self: flex-start;">
+          OPEN STAFF CONSOLE →
+        </span>
+      </a>
+
+      <!-- 3. Cashier POS -->
+      <a href="Cashier.html" class="portal-card" style="--card-accent: var(--green);">
+        <span class="cyber-badge badge-available portal-badge">POS TERMINAL</span>
+        <div class="portal-icon">💳</div>
+        <h2 class="portal-title">CASHIER POS & SALES REGISTER</h2>
+        <p class="portal-desc">
+          Rapid-fire point of sale terminal for hourly passes, gamer account wallet top-ups, snack inventory checkout, Maya/GCash/Cash payments, and daily shift summaries.
+        </p>
+        <span class="btn-cyber btn-cyber-green" style="align-self: flex-start;">
+          OPEN CASHIER REGISTER →
+        </span>
+      </a>
+
+      <!-- 4. Executive Admin Center -->
+      <a href="admin.html" class="portal-card" style="--card-accent: var(--magenta);">
+        <span class="cyber-badge badge-vip portal-badge">ADMIN ONLY</span>
+        <div class="portal-icon">⚡</div>
+        <h2 class="portal-title">EXECUTIVE ADMIN CENTER</h2>
+        <p class="portal-desc">
+          Business intelligence dashboard, live revenue metrics, occupancy rates, PC hardware specs configuration, packages & promo codes manager, and gamer database.
+        </p>
+        <span class="btn-cyber btn-cyber-magenta" style="align-self: flex-start;">
+          ACCESS COMMAND CENTER →
+        </span>
+      </a>
+
+      <!-- 5. Authentication Portal -->
+      <a href="login.html" class="portal-card" style="--card-accent: #f59e0b; grid-column: 1 / -1;">
+        <span class="cyber-badge badge-warning portal-badge">AUTH & SECURITY</span>
+        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+          <div class="portal-icon" style="margin-bottom: 0;">🔐</div>
+          <div style="flex: 1;">
+            <h2 class="portal-title" style="margin-bottom: 4px;">AUTHENTICATION & GAMER SIGN IN / REGISTRATION</h2>
+            <p class="portal-desc" style="margin-bottom: 0;">
+              Switch accounts, register a new gamer membership with free ₱100 credit bonus, or log in with one of the instructor demo accounts.
+            </p>
+          </div>
+          <span class="btn-cyber btn-cyber-primary">
+            SIGN IN / SIGN UP PORTAL →
+          </span>
+        </div>
+      </a>
+
+    </section>
+
+    <!-- System Information & Cloud Sync Status -->
+    <section class="instructor-guide-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <span class="cyber-badge badge-vip">SYSTEM SECURITY & DATABASE STATUS</span>
+          <h3 class="font-display" style="font-size: 1.3rem; color: #fff; margin-top: 6px;">
+            Single-Link Unified Portal & Cloud Architecture
+          </h3>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <a href="login.html" class="btn-cyber btn-cyber-primary" style="font-size: 0.8rem;">
+            🔐 AUTHENTICATION PORTAL
+          </a>
+          <a href="credentials.txt" target="_blank" class="btn-cyber btn-cyber-secondary" style="font-size: 0.8rem;">
+            📄 SYSTEM CREDENTIALS & DOCS
+          </a>
+        </div>
+      </div>
+
+      <div style="background: rgba(0, 240, 255, 0.05); border: 1px dashed var(--cyan); border-radius: var(--radius-sm); padding: 16px; font-size: 0.9rem; color: var(--text-secondary);">
+        💡 <strong>Supabase Integration:</strong> Connected to Supabase Cloud (<code style="color:var(--cyan)">https://uiingbpzfgxmxlwtwfzy.supabase.co</code>). The complete database schema is saved in <code style="color:var(--cyan)">supabase_schema.sql</code> and ready for the Supabase SQL Editor.
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Core JavaScript -->
+  <script src="js/comshop-data.js"></script>
+  <script src="js/comshop-ui.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check current user
+      const currentUser = window.VensStore ? window.VensStore.getCurrentUser() : null;
+      if (currentUser) {
+        document.getElementById('hud-active-user').innerText = `${currentUser.name} (${currentUser.role || currentUser.rank || 'Gamer'})`;
+      }
+
+      // Check stations stats
+      if (window.VensStore) {
+        const stations = window.VensStore.getStations();
+        const activeCount = stations.filter(s => s.status === 'active').length;
+        document.getElementById('hud-active-stations').innerText = `${activeCount} / ${stations.length} Active`;
+      }
+
+      // Ping Backend Health & Supabase
+      try {
+        const res = await fetch('/api/health');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('hud-backend-status').innerText = `Online (Port ${data.port || 5000})`;
+          if (data.supabase && data.supabase.connected) {
+            document.getElementById('hud-supabase-status').innerText = `Connected (${data.supabase.status})`;
+            document.getElementById('hud-supabase-status').className = 'text-green';
+          } else {
+            document.getElementById('hud-supabase-status').innerText = data.supabase ? data.supabase.status : 'Local Storage Mode';
+          }
+          if (data.stats) {
+            document.getElementById('hud-active-stations').innerText = `${data.stats.activeSessions} / ${data.stats.stations} Active`;
+          }
+        }
+      } catch (err) {
+        document.getElementById('hud-backend-status').innerText = 'Local Offline Mode';
+        document.getElementById('hud-supabase-status').innerText = 'Local Browser Storage';
+      }
+    });
+  </script>
+</body>
+</html>

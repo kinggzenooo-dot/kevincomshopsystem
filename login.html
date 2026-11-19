@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vens ComShop — Sign In & Gamer Registration</title>
+  
+  <link rel="stylesheet" href="css/cyber-core.css">
+  
+  <style>
+    .auth-page-container {
+      min-height: calc(100vh - 54px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      background: radial-gradient(circle at 50% 40%, rgba(0, 240, 255, 0.08) 0%, transparent 70%);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(10, 13, 22, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 25px rgba(0, 240, 255, 0.15);
+      position: relative;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .auth-badge {
+      display: inline-block;
+      font-family: var(--font-sub);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      padding: 4px 12px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .auth-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .auth-title span {
+      color: var(--cyan);
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 25px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sub);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: var(--transition-fast);
+    }
+
+    .auth-tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+      box-shadow: 0 4px 12px var(--cyan-glow);
+    }
+
+    .auth-notice-banner {
+      background: rgba(255, 183, 3, 0.12);
+      border: 1px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: #fff;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-page-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-badge">SECURE ACCESS GATEWAY</div>
+        <h1 class="auth-title">VENS <span>COMSHOP</span></h1>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 6px;">
+          Sign in to your account or register a new gaming membership.
+        </p>
+      </div>
+
+      <!-- Redirect / Auth Notice Banner -->
+      <div class="auth-notice-banner" id="auth-notice">
+        <span>⚠️</span>
+        <span id="auth-notice-text">Authentication required to access that area.</span>
+      </div>
+
+      <!-- Auth Mode Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">
+          ⚡ SIGN IN
+        </button>
+        <button class="auth-tab-btn" id="tab-btn-signup" onclick="switchAuthTab('signup')">
+          🎮 REGISTER / SIGN UP
+        </button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form id="form-signin" onsubmit="handleSignInSubmit(event)">
+        <div class="cyber-input-group">
+          <label>Username or Email Address</label>
+          <input type="text" id="signin-ident" class="cyber-input" placeholder="Enter username or email" required autocomplete="username">
+        </div>
+
+        <div class="cyber-input-group">
+          <label>Password or Security PIN</label>
+          <input type="password" id="signin-pwd" class="cyber-input" placeholder="Enter password or staff PIN" required autocomplete="current-password">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 0.85rem;">
+          <label style="color: var(--text-secondary); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="remember-me" checked> Remember Session
+          </label>
+          <a href="javascript:void(0)" onclick="switchAuthTab('signup')" style="color: var(--cyan); text-decoration: none;">Need an account?</a>
+        </div>
+
+        <button type="submit" class="btn-cyber btn-cyber-primary" style="width: 100%; padding: 13px; font-size: 1rem;">
+          AUTHENTICATE & ENTER →
+        </button>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="form-signup" style="display: none;" onsubmit="handleSignUpSubmit(event)">
+        <div class="cyber-input-group">
+          <label>Gamer Full Name</label>
+          <input type="text" id="signup-name" class="cyber-input" placeholder="e.g. Marcus Rayne" required>
+        </div>
+
+        <div class="cyber-input-group">
+          <label>Email Address</label>
+          <input type="email" id="signup-email" class="cyber-input" placeholder="e.g. marcus@cybernet.io" required>
+        </div>
+
+        <div class="cyber-input-group">
+          <label>Mobile Number (For Seat Booking & Alerts)</label>
+          <input type="tel" id="signup-phone" class="cyber-input" placeholder="+63 917 123 4567">
+        </div>
+
+        <div class="cyber-input-group">
+          <label>Password</label>
+          <input type="password" id="signup-pwd" class="cyber-input" placeholder="Minimum 4 characters" required minlength="4">
+        </div>
+
+        <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid var(--green); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 20px; font-size: 0.85rem; color: #fff;">
+          🎁 <strong>New Member Bonus:</strong> You will immediately receive <strong>₱100 free gaming credit</strong> and 100 reward points!
+        </div>
+
+        <button type="submit" class="btn-cyber btn-cyber-green" style="width: 100%; padding: 13px; font-size: 1rem;">
+          CREATE GAMER ACCOUNT & GET ₱100 →
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- JS Core -->
+  <script src="js/comshop-data.js"></script>
+  <script src="js/comshop-ui.js"></script>
+
+  <script>
+    // Check URL parameters for redirect instructions
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('msg');
+      const mode = params.get('mode');
+
+      if (msg) {
+        const banner = document.getElementById('auth-notice');
+        document.getElementById('auth-notice-text').innerText = msg;
+        banner.style.display = 'flex';
+      }
+
+      if (mode === 'signup') {
+        switchAuthTab('signup');
+      }
+    });
+
+    function switchAuthTab(tab) {
+      const isSignIn = tab === 'signin';
+      document.getElementById('tab-btn-signin').classList.toggle('active', isSignIn);
+      document.getElementById('tab-btn-signup').classList.toggle('active', !isSignIn);
+      document.getElementById('form-signin').style.display = isSignIn ? 'block' : 'none';
+      document.getElementById('form-signup').style.display = isSignIn ? 'none' : 'block';
+    }
+
+    function getTargetRedirect(defaultRedirect) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('redirect') || defaultRedirect || 'customer.html';
+    }
+
+    async function handleSignInSubmit(e) {
+      e.preventDefault();
+      const ident = document.getElementById('signin-ident').value.trim();
+      const pwd = document.getElementById('signin-pwd').value.trim();
+
+      if (!ident || !pwd) {
+        window.showToast("Please enter username and password/PIN", "error");
+        return;
+      }
+
+      window.showToast("Verifying credentials...", "info");
+
+      // Try Backend API First
+      try {
+        const resp = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: ident, password: pwd })
+        });
+        const res = await resp.json();
+
+        if (resp.ok && res.success) {
+          localStorage.setItem('vens_current_user', JSON.stringify(res.user));
+          localStorage.setItem('vens_auth_token', res.token);
+          window.showToast(`Welcome back, ${res.user.name}! Redirecting...`, 'success');
+          const target = getTargetRedirect(res.redirect);
+          setTimeout(() => {
+            window.location.href = target;
+          }, 700);
+          return;
+        } else if (!resp.ok && res.error) {
+          window.showToast(res.error, "error");
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend API offline, falling back to local database store", err);
+      }
+
+      // Local Fallback if server is running offline or opened via direct file
+      if (window.VensStore) {
+        const authRes = window.VensStore.authenticate(ident, pwd);
+        if (authRes.success) {
+          localStorage.setItem('vens_current_user', JSON.stringify(authRes.user));
+          localStorage.setItem('vens_auth_token', `local-${Date.now()}`);
+          window.showToast(`Authenticated as ${authRes.user.name}!`, 'success');
+          const target = getTargetRedirect(authRes.redirect);
+          setTimeout(() => {
+            window.location.href = target;
+          }, 700);
+        } else {
+          window.showToast(authRes.error || "Invalid login credentials", "error");
+        }
+      }
+    }
+
+    async function handleSignUpSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const phone = document.getElementById('signup-phone').value.trim();
+      const password = document.getElementById('signup-pwd').value.trim();
+
+      if (!name || !email || !password) {
+        window.showToast("Please fill in all required fields", "error");
+        return;
+      }
+
+      window.showToast("Creating gamer account...", "info");
+
+      // Try Backend API
+      try {
+        const resp = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, password })
+        });
+        const res = await resp.json();
+
+        if (resp.ok && res.success) {
+          localStorage.setItem('vens_current_user', JSON.stringify(res.user));
+          localStorage.setItem('vens_auth_token', res.token);
+          window.showToast(res.message || "Registration successful!", "success");
+          const target = getTargetRedirect(res.redirect);
+          setTimeout(() => {
+            window.location.href = target;
+          }, 800);
+          return;
+        } else if (!resp.ok && res.error) {
+          window.showToast(res.error, "error");
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend API offline, registering locally", err);
+      }
+
+      // Local fallback
+      if (window.VensStore) {
+        const regRes = window.VensStore.registerCustomer({ name, email, phone, password });
+        if (regRes.success) {
+          localStorage.setItem('vens_current_user', JSON.stringify(regRes.user));
+          localStorage.setItem('vens_auth_token', `local-${Date.now()}`);
+          window.showToast("Account created! ₱100 welcome bonus added.", "success");
+          const target = getTargetRedirect('customer.html');
+          setTimeout(() => {
+            window.location.href = target;
+          }, 800);
+        } else {
+          window.showToast(regRes.error || "Registration failed", "error");
+        }
+      }
+    }
+  </script>
+</body>
+</html>

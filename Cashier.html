@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vens ComShop — Cashier POS & Sales Terminal</title>
+
+  <link rel="stylesheet" href="css/cyber-core.css">
+
+  <style>
+    .cashier-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .cashier-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 25px;
+    }
+
+    /* POS Layout */
+    .pos-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 25px;
+    }
+    @media (max-width: 1024px) {
+      .pos-layout { grid-template-columns: 1fr; }
+    }
+
+    .pos-catalog {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .pos-item-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-fast);
+      user-select: none;
+    }
+    .pos-item-card:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--cyan);
+      transform: scale(1.02);
+    }
+    .pos-item-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .pos-item-name {
+      font-family: var(--font-sub);
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .pos-item-price {
+      font-family: var(--font-display);
+      color: var(--green);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* POS Ticket Drawer */
+    .pos-ticket {
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .ticket-items-scroll {
+      flex: 1;
+      max-height: 280px;
+      overflow-y: auto;
+      margin: 15px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 0;
+    }
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cashier-container">
+    
+    <!-- Topbar -->
+    <div class="cashier-topbar">
+      <div>
+        <div style="font-family: var(--font-sub); color: var(--cyan); font-weight: 700; letter-spacing: 1px; font-size: 0.85rem;">POINT OF SALE TERMINAL</div>
+        <h1 class="font-display" style="font-size: 1.8rem; color: #fff;">VENS CASHIER REGISTER</h1>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <div style="text-align: right;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">CASHIER OPERATOR</div>
+          <div style="font-family: var(--font-sub); font-weight: 700; color: #fff;" id="cashier-operator-name">Cyber Cashier (Rhea)</div>
+        </div>
+        <div style="text-align: right; border-left: 1px solid var(--border-subtle); padding-left: 20px;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">TODAY'S SALES</div>
+          <div class="font-display text-green font-bold" style="font-size: 1.4rem;" id="cashier-daily-total">₱0</div>
+        </div>
+        <button class="btn-cyber btn-cyber-secondary" onclick="openShiftReportModal()">
+          📑 SHIFT REPORT
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Sub-Tabs -->
+    <div class="filter-tabs" id="cashier-view-tabs">
+      <button class="filter-btn active" data-view="pos">💳 POS Register</button>
+      <button class="filter-btn" data-view="orders">🚚 Seat Orders Queue</button>
+      <button class="filter-btn" data-view="history">📑 Today's Transactions</button>
+    </div>
+
+    <!-- VIEW 1: POS REGISTER -->
+    <div id="view-pos" class="pos-layout">
+      
+      <!-- Catalog -->
+      <div class="pos-catalog">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <div class="filter-tabs" id="pos-cat-filter" style="margin-bottom:0;">
+            <button class="filter-btn active" data-cat="all">All Items</button>
+            <button class="filter-btn" data-cat="packages">PC Packages</button>
+            <button class="filter-btn" data-cat="food">Food & Snacks</button>
+            <button class="filter-btn" data-cat="drinks">Drinks</button>
+            <button class="filter-btn" data-cat="accessories">Accessories</button>
+          </div>
+          <input type="text" id="pos-search" class="cyber-input" placeholder="Search item..." style="width: 200px;" onkeyup="renderPosCatalog()">
+        </div>
+
+        <div class="catalog-grid" id="pos-catalog-grid">
+          <!-- Dynamic Items -->
+        </div>
+      </div>
+
+      <!-- Ticket Drawer -->
+      <div class="pos-ticket">
+        <h3 class="font-display" style="font-size: 1.2rem; color: #fff; margin-bottom: 10px;">RECEIPT TICKET</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div class="cyber-input-group" style="margin-bottom:0;">
+            <label>Station (Optional)</label>
+            <select id="ticket-pc-select" class="cyber-select"></select>
+          </div>
+          <div class="cyber-input-group" style="margin-bottom:0;">
+            <label>Customer Name</label>
+            <input type="text" id="ticket-cust-name" class="cyber-input" value="Walk-in Gamer">
+          </div>
+        </div>
+
+        <!-- Ticket Items Scroll -->
+        <div class="ticket-items-scroll" id="ticket-items-list">
+          <!-- Dynamic ticket rows -->
+        </div>
+
+        <!-- Totals & Payment -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.9rem;">
+            <span>Subtotal:</span>
+            <span id="ticket-subtotal">₱0</span>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="ticket-promo-input" class="cyber-input" placeholder="Promo Code" style="flex:1; padding: 6px 10px; font-size: 0.85rem;">
+            <button class="btn-cyber btn-cyber-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="applyPromoDiscount()">APPLY</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 1.5rem; color: var(--green); font-weight: bold; margin-top: 5px;">
+            <span>TOTAL DUE:</span>
+            <span id="ticket-total-display">₱0</span>
+          </div>
+
+          <div class="cyber-input-group" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>Payment Method</label>
+            <select id="ticket-payment-method" class="cyber-select" onchange="toggleCashTendered()">
+              <option value="Cash">Cash</option>
+              <option value="GCash">GCash QR</option>
+              <option value="Maya">Maya QR</option>
+              <option value="Card">Debit / Credit Card</option>
+            </select>
+          </div>
+
+          <div id="cash-tendered-box" style="display: flex; gap: 10px; align-items: center;">
+            <div class="cyber-input-group" style="flex:1; margin-bottom:0;">
+              <label>Cash Tendered</label>
+              <input type="number" id="cash-tendered-input" class="cyber-input" placeholder="₱0" onkeyup="calculateChange()">
+            </div>
+            <div style="text-align: right; min-width: 100px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">CHANGE</div>
+              <div class="font-mono text-cyan font-bold" style="font-size: 1.2rem;" id="cash-change-display">₱0</div>
+            </div>
+          </div>
+
+          <button class="btn-cyber btn-cyber-green" style="width: 100%; margin-top: 15px; padding: 14px;" onclick="processPosCheckout()">
+            💳 COMPLETE SALE & PRINT RECEIPT
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: SEAT ORDERS QUEUE -->
+    <div id="view-orders" style="display: none;">
+      <div class="cyber-card">
+        <h3 class="font-display" style="font-size: 1.3rem; color: #fff; margin-bottom: 20px;">SEAT FOOD ORDERS MANAGEMENT</h3>
+        <div class="cyber-table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Station</th>
+                <th>Customer</th>
+                <th>Items Ordered</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cashier-orders-table">
+              <!-- Dynamic -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: TRANSACTIONS HISTORY -->
+    <div id="view-history" style="display: none;">
+      <div class="cyber-card">
+        <h3 class="font-display" style="font-size: 1.3rem; color: #fff; margin-bottom: 20px;">TODAY'S SALES TRANSACTIONS LOG</h3>
+        <div class="cyber-table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>Tx #</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="cashier-history-table">
+              <!-- Dynamic -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DIGITAL RECEIPT MODAL -->
+  <div class="cyber-modal-overlay" id="receipt-modal">
+    <div class="cyber-modal-box" style="max-width: 440px;">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">🧾 OFFICIAL RECEIPT</h3>
+        <button class="cyber-modal-close" data-close-modal="receipt-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body" style="font-family: var(--font-mono); font-size: 0.85rem; color: #e0e6ed;">
+        <div style="text-align: center; margin-bottom: 15px; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 10px;">
+          <div style="font-family: var(--font-display); font-size: 1.3rem; color: var(--cyan); font-weight: bold;">VENS COMSHOP</div>
+          <div>777 Cyber Matrix Plaza, Tech Sector 7</div>
+          <div>TIN: 882-991-004-000</div>
+          <div style="margin-top: 6px; font-size: 0.75rem; color: var(--text-muted);" id="rcpt-date"></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div>Receipt No: <span id="rcpt-no" style="color:#fff;"></span></div>
+          <div>Cashier: <span id="rcpt-cashier">CyberCashier</span></div>
+          <div>Customer: <span id="rcpt-cust"></span></div>
+        </div>
+
+        <div style="border-top: 1px dashed var(--border-subtle); border-bottom: 1px dashed var(--border-subtle); padding: 10px 0; margin-bottom: 10px;" id="rcpt-items">
+          <!-- Receipt lines -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; color: var(--green);">
+          <span>TOTAL PAID:</span>
+          <span id="rcpt-total"></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+          <span>Payment via: <span id="rcpt-paymethod"></span></span>
+          <span id="rcpt-change-line"></span>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 0.75rem; color: var(--cyan);">
+          *** THANK YOU FOR GAMING AT VENS! ***
+        </div>
+      </div>
+      <div class="cyber-modal-footer">
+        <button class="btn-cyber btn-cyber-primary" onclick="window.print();">🖨️ PRINT RECEIPT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHIFT REPORT MODAL -->
+  <div class="cyber-modal-overlay" id="shift-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">📑 CASHIER SHIFT SUMMARY</h3>
+        <button class="cyber-modal-close" data-close-modal="shift-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body" id="shift-report-content">
+        <!-- Dynamic Shift Summary -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Core -->
+  <script src="js/comshop-data.js"></script>
+  <script src="js/comshop-ui.js"></script>
+
+  <script>
+    let ticketCart = []; // [{ item, qty }]
+    let activeCatalogCat = 'all';
+    let appliedDiscount = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Authorization Guard
+      const user = window.VensStore ? window.VensStore.getCurrentUser() : null;
+      if (!user) {
+        window.location.href = 'login.html?redirect=Cashier.html&msg=Sign+in+required.+Cashier+access+only.';
+        return;
+      }
+      if (!user.role || (!user.role.includes('Cashier') && user.role !== 'Administrator')) {
+        alert('Access Denied: Cashier or Administrator privileges required.');
+        window.location.href = 'customer.html';
+        return;
+      }
+      const operatorEl = document.getElementById('cashier-operator-name');
+      if (operatorEl) operatorEl.innerText = `${user.name} (${user.role})`;
+
+      renderPosCatalog();
+      populatePosDropdowns();
+      renderTodaySalesTotal();
+
+      // Listeners
+      window.addEventListener('comshop-data-updated', () => {
+        renderTodaySalesTotal();
+        renderOrdersTable();
+        renderHistoryTable();
+      });
+
+      // View tabs
+      document.getElementById('cashier-view-tabs').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          document.querySelectorAll('#cashier-view-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          const view = e.target.getAttribute('data-view');
+          
+          document.getElementById('view-pos').style.display = view === 'pos' ? 'grid' : 'none';
+          document.getElementById('view-orders').style.display = view === 'orders' ? 'block' : 'none';
+          document.getElementById('view-history').style.display = view === 'history' ? 'block' : 'none';
+
+          if (view === 'orders') renderOrdersTable();
+          if (view === 'history') renderHistoryTable();
+        }
+      });
+
+      // POS catalog filter
+      document.getElementById('pos-cat-filter').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          document.querySelectorAll('#pos-cat-filter .filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeCatalogCat = e.target.getAttribute('data-cat');
+          renderPosCatalog();
+        }
+      });
+    });
+
+    function renderTodaySalesTotal() {
+      const txs = window.VensStore.getTransactions();
+      const total = txs.reduce((sum, t) => sum + (t.amount || 0), 0);
+      document.getElementById('cashier-daily-total').innerText = window.formatCurrency(total);
+    }
+
+    function renderPosCatalog() {
+      const grid = document.getElementById('pos-catalog-grid');
+      const products = window.VensStore.getProducts();
+      const packages = window.VensStore.getPackages();
+      const search = document.getElementById('pos-search').value.toLowerCase();
+
+      let items = [];
+
+      if (activeCatalogCat === 'all' || activeCatalogCat === 'packages') {
+        packages.forEach(pkg => {
+          items.push({
+            id: pkg.id,
+            name: pkg.name,
+            category: 'packages',
+            price: pkg.price,
+            icon: '⚡',
+            raw: pkg
+          });
+        });
+      }
+
+      if (activeCatalogCat === 'all' || activeCatalogCat !== 'packages') {
+        products.forEach(p => {
+          if (activeCatalogCat === 'all' || p.category === activeCatalogCat) {
+            items.push({
+              id: p.id,
+              name: p.name,
+              category: p.category,
+              price: p.price,
+              icon: p.image,
+              raw: p
+            });
+          }
+        });
+      }
+
+      if (search) {
+        items = items.filter(i => i.name.toLowerCase().includes(search));
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div class="pos-item-card" onclick="addToTicket('${item.id}', '${item.category}')">
+          <div class="pos-item-icon">${item.icon}</div>
+          <div class="pos-item-name">${item.name}</div>
+          <div class="pos-item-price">₱${item.price}</div>
+        </div>
+      `).join('');
+    }
+
+    function populatePosDropdowns() {
+      const stations = window.VensStore.getStations();
+      const pcSelect = document.getElementById('ticket-pc-select');
+      pcSelect.innerHTML = `<option value="">None (Counter Sale)</option>` + stations.map(s => `<option value="${s.code}">${s.code} (${s.zone})</option>`).join('');
+    }
+
+    function addToTicket(itemId, category) {
+      let foundItem = null;
+
+      if (category === 'packages') {
+        const pkg = window.VensStore.getPackages().find(p => p.id === itemId);
+        if (pkg) foundItem = { id: pkg.id, name: pkg.name, price: pkg.price, type: 'Package', raw: pkg };
+      } else {
+        const prod = window.VensStore.getProducts().find(p => p.id === itemId);
+        if (prod) foundItem = { id: prod.id, name: prod.name, price: prod.price, type: 'Product', raw: prod };
+      }
+
+      if (!foundItem) return;
+
+      const existing = ticketCart.find(t => t.item.id === itemId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        ticketCart.push({ item: foundItem, qty: 1 });
+      }
+
+      updateTicketUI();
+    }
+
+    function updateTicketUI() {
+      const list = document.getElementById('ticket-items-list');
+      let subtotal = 0;
+
+      if (ticketCart.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">Ticket is empty. Click items to add.</div>`;
+      } else {
+        list.innerHTML = ticketCart.map((row, idx) => {
+          const rowTotal = row.item.price * row.qty;
+          subtotal += rowTotal;
+          return `
+            <div class="ticket-row">
+              <div style="flex:1;">
+                <div style="color:#fff; font-weight:600;">${row.item.name}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">₱${row.item.price} each</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="filter-btn" style="padding:1px 6px;" onclick="changeTicketQty(${idx}, -1)">-</button>
+                <span>${row.qty}</span>
+                <button type="button" class="filter-btn" style="padding:1px 6px;" onclick="changeTicketQty(${idx}, 1)">+</button>
+              </div>
+              <div style="min-width:60px; text-align:right; font-weight:bold; color:var(--cyan);">₱${rowTotal}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const totalAfterDiscount = Math.max(0, subtotal - appliedDiscount);
+
+      document.getElementById('ticket-subtotal').innerText = window.formatCurrency(subtotal);
+      document.getElementById('ticket-total-display').innerText = window.formatCurrency(totalAfterDiscount);
+
+      calculateChange();
+    }
+
+    function changeTicketQty(idx, delta) {
+      ticketCart[idx].qty += delta;
+      if (ticketCart[idx].qty <= 0) ticketCart.splice(idx, 1);
+      updateTicketUI();
+    }
+
+    function applyPromoDiscount() {
+      const code = document.getElementById('ticket-promo-input').value.trim().toUpperCase();
+      const promo = window.VensStore.getPromos().find(p => p.code === code && p.active);
+
+      if (promo) {
+        if (promo.type === 'percentage') {
+          const subtotal = ticketCart.reduce((sum, r) => sum + (r.item.price * r.qty), 0);
+          appliedDiscount = Math.round(subtotal * (promo.value / 100));
+        } else {
+          appliedDiscount = promo.value;
+        }
+        window.showToast(`Applied Promo ${code} (-₱${appliedDiscount})`, 'success');
+      } else {
+        appliedDiscount = 0;
+        window.showToast('Invalid or expired promo code', 'error');
+      }
+      updateTicketUI();
+    }
+
+    function toggleCashTendered() {
+      const method = document.getElementById('ticket-payment-method').value;
+      document.getElementById('cash-tendered-box').style.display = method === 'Cash' ? 'flex' : 'none';
+    }
+
+    function calculateChange() {
+      const totalDue = Math.max(0, ticketCart.reduce((sum, r) => sum + (r.item.price * r.qty), 0) - appliedDiscount);
+      const tendered = Number(document.getElementById('cash-tendered-input').value || 0);
+      const change = Math.max(0, tendered - totalDue);
+      document.getElementById('cash-change-display').innerText = window.formatCurrency(change);
+    }
+
+    function processPosCheckout() {
+      if (ticketCart.length === 0) {
+        window.showToast('No items on receipt ticket!', 'error');
+        return;
+      }
+
+      const pcCode = document.getElementById('ticket-pc-select').value;
+      const custName = document.getElementById('ticket-cust-name').value;
+      const payMethod = document.getElementById('ticket-payment-method').value;
+      const subtotal = ticketCart.reduce((sum, r) => sum + (r.item.price * r.qty), 0);
+      const finalTotal = Math.max(0, subtotal - appliedDiscount);
+
+      // If PC package on cart and target PC selected, start PC session automatically!
+      const pkgItem = ticketCart.find(r => r.item.type === 'Package');
+      if (pkgItem && pcCode) {
+        window.VensStore.startSession(pcCode, custName, pkgItem.item.raw.hours * 60, pkgItem.item.raw.id);
+      } else {
+        // Log transaction
+        window.VensStore.logTransaction({
+          type: 'POS Counter Sale',
+          details: `${ticketCart.map(t => `${t.item.name} (x${t.qty})`).join(', ')}`,
+          amount: finalTotal,
+          paymentMethod: payMethod,
+          cashier: 'CyberCashier'
+        });
+      }
+
+      // Show receipt modal
+      document.getElementById('rcpt-no').innerText = `TX-${Math.floor(1000 + Math.random() * 9000)}`;
+      document.getElementById('rcpt-date').innerText = new Date().toLocaleString();
+      document.getElementById('rcpt-cust').innerText = custName + (pcCode ? ` (${pcCode})` : '');
+      document.getElementById('rcpt-items').innerHTML = ticketCart.map(t => `
+        <div style="display:flex; justify-content:space-between;">
+          <span>${t.item.name} x${t.qty}</span>
+          <span>₱${t.item.price * t.qty}</span>
+        </div>
+      `).join('');
+      document.getElementById('rcpt-total').innerText = window.formatCurrency(finalTotal);
+      document.getElementById('rcpt-paymethod').innerText = payMethod;
+
+      const tendered = Number(document.getElementById('cash-tendered-input').value || 0);
+      document.getElementById('rcpt-change-line').innerText = payMethod === 'Cash' ? `Change: ${window.formatCurrency(Math.max(0, tendered - finalTotal))}` : '';
+
+      window.openCyberModal('receipt-modal');
+
+      // Clear Ticket
+      ticketCart = [];
+      appliedDiscount = 0;
+      document.getElementById('ticket-promo-input').value = '';
+      document.getElementById('cash-tendered-input').value = '';
+      updateTicketUI();
+      window.VensStore.saveData();
+      window.showToast('Transaction Completed Successfully!', 'success');
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('cashier-orders-table');
+      const orders = window.VensStore.getOrders();
+
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td><strong>#${o.orderNo}</strong></td>
+          <td><span class="cyber-badge badge-occupied">${o.stationCode}</span></td>
+          <td>${o.customerName}</td>
+          <td>${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}</td>
+          <td class="text-green font-bold">₱${o.total}</td>
+          <td>${o.paymentMethod || 'Cash'}</td>
+          <td><span class="cyber-badge badge-active">${o.status.toUpperCase()}</span></td>
+          <td>
+            ${o.status !== 'delivered' ? `<button class="btn-cyber btn-cyber-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="window.VensStore.updateOrderStatus('${o.id}', 'delivered'); showToast('Order Delivered!', 'success');">MARK DELIVERED</button>` : '✓ COMPLETED'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('cashier-history-table');
+      const txs = window.VensStore.getTransactions();
+
+      tbody.innerHTML = txs.map(t => `
+        <tr>
+          <td><strong>${t.txNo}</strong></td>
+          <td><span class="cyber-badge badge-active">${t.type}</span></td>
+          <td>${t.details}</td>
+          <td class="text-green font-bold">₱${t.amount}</td>
+          <td>${t.paymentMethod}</td>
+          <td style="font-size:0.8rem; color:var(--text-muted);">${window.formatDateTime(t.timestamp)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function openShiftReportModal() {
+      const txs = window.VensStore.getTransactions();
+      const totalRev = txs.reduce((sum, t) => sum + t.amount, 0);
+      const cashRev = txs.filter(t => t.paymentMethod === 'Cash').reduce((sum, t) => sum + t.amount, 0);
+      const digitalRev = totalRev - cashRev;
+
+      const content = document.getElementById('shift-report-content');
+      content.innerHTML = `
+        <div class="tracker-box">
+          <div style="font-size: 0.85rem; color: var(--cyan); font-family: var(--font-sub); font-weight: 700;">CURRENT SHIFT REPORT</div>
+          <div style="font-size: 1.6rem; font-family: var(--font-display); color: #fff; margin: 5px 0;">Total Shift Revenue: <span class="text-green">₱${totalRev}</span></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px;">
+          <div class="cyber-card" style="padding: 15px;">
+            <div style="color: var(--text-muted); font-size: 0.8rem;">CASH IN DRAWER</div>
+            <div class="font-display text-cyan font-bold" style="font-size: 1.3rem;">₱${cashRev}</div>
+          </div>
+          <div class="cyber-card" style="padding: 15px;">
+            <div style="color: var(--text-muted); font-size: 0.8rem;">GCASH / MAYA DIGITAL</div>
+            <div class="font-display text-purple font-bold" style="font-size: 1.3rem;">₱${digitalRev}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-secondary);">
+          Total Completed Transactions: <strong>${txs.length}</strong><br>
+          Shift Operator: <strong>CyberCashier (Rhea)</strong>
+        </div>
+
+        <button class="btn-cyber btn-cyber-magenta" style="width:100%; margin-top: 20px;" onclick="window.print();">
+          🖨️ PRINT END OF SHIFT Z-REPORT
+        </button>
+      `;
+
+      window.openCyberModal('shift-modal');
+    }
+  </script>
+</body>
+</html>

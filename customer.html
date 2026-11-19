@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vens ComShop — Cyber Gaming Lounge & Ordering System</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/cyber-core.css">
+  
+  <style>
+    /* Customer Website Custom Styles */
+    .hero-section {
+      padding: 90px 20px 60px;
+      text-align: center;
+      position: relative;
+      background: radial-gradient(circle at 50% 30%, rgba(0, 240, 255, 0.12) 0%, transparent 60%);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 30%, var(--cyan) 70%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      max-width: 760px;
+      margin: 0 auto 30px;
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+    }
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 950px;
+      margin: 40px auto 0;
+    }
+    .hero-stat-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      flex: 1 1 200px;
+      text-align: center;
+    }
+    .hero-stat-num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+    .hero-stat-label {
+      font-size: 0.85rem;
+      font-family: var(--font-sub);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Section Wrappers */
+    .section-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+    .section-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .section-tag {
+      font-family: var(--font-sub);
+      color: var(--cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 35px;
+    }
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    /* Station Grid */
+    .station-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .station-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      position: relative;
+      transition: var(--transition-normal);
+    }
+    .station-card:hover {
+      border-color: var(--border-cyber);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 15px var(--cyan-glow);
+    }
+    .station-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .pc-code {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .pc-specs-list {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pc-specs-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pc-specs-list li span {
+      color: var(--cyan);
+    }
+    .station-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .station-rate {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* Packages Grid */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+    }
+    .package-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition-normal);
+    }
+    .package-card.recommended {
+      border-color: var(--cyan);
+      box-shadow: 0 0 25px var(--cyan-glow);
+      background: linear-gradient(180deg, rgba(0, 240, 255, 0.08) 0%, var(--bg-card) 60%);
+    }
+    .package-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: var(--cyan);
+      color: #000;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+    .package-price {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 15px 0 5px;
+    }
+    .package-price span {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .package-features {
+      list-style: none;
+      margin: 20px 0 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .package-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .package-features li::before {
+      content: '✓';
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    /* Products Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-normal);
+    }
+    .product-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+    .product-icon {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 15px;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-sm);
+      padding: 15px;
+    }
+    .product-title {
+      font-family: var(--font-sub);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .product-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      flex: 1;
+    }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .product-price {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* Cart Floating Trigger */
+    .cart-float-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: #000;
+      font-family: var(--font-display);
+      font-weight: 800;
+      padding: 14px 22px;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px var(--cyan-glow);
+      cursor: pointer;
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: var(--transition-normal);
+    }
+    .cart-float-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 15px 35px var(--cyan-glow);
+    }
+    .cart-badge {
+      background: #000;
+      color: var(--cyan);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+
+    /* Tracker Drawer */
+    .tracker-box {
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--border-cyber);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Footer */
+    .cyber-footer {
+      background: rgba(4, 5, 8, 0.95);
+      border-top: 1px solid var(--border-subtle);
+      padding: 50px 20px 30px;
+      margin-top: 80px;
+    }
+    .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div style="display:inline-block; padding: 4px 16px; border-radius: 20px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-family: var(--font-sub); font-size: 0.85rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px;">
+      ⚡ ULTIMATE ESPORTS GAMING EXPERIENCE
+    </div>
+    <h1 class="hero-title">VENS COMSHOP MATRIX</h1>
+    <p class="hero-subtitle">
+      Step into the future of cyber gaming. High-refresh 360Hz QD-OLED setups, RTX 4090 Monster Rigs, 10Gbps dedicated fiber, soundproof streaming booths, and gourmet seat delivery.
+    </p>
+    
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      <button class="btn-cyber btn-cyber-primary" onclick="openReserveModal()">
+        🖥️ RESERVE PC NOW
+      </button>
+      <a href="#packages-section" class="btn-cyber btn-cyber-secondary">
+        ⚡ EXPLORE PACKAGES
+      </a>
+      <button class="btn-cyber btn-cyber-magenta" onclick="openTrackerModal()">
+        ⏱️ TRACK ACTIVE SESSION
+      </button>
+    </div>
+
+    <!-- Live Stat Bar -->
+    <div class="hero-stats">
+      <div class="hero-stat-card">
+        <div class="hero-stat-num" id="stat-active-pcs">24 / 30</div>
+        <div class="hero-stat-label">Active Gaming PCs</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-num">10 Gbps</div>
+        <div class="hero-stat-label">Dedicated Fiber</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-num">360 Hz</div>
+        <div class="hero-stat-label">Esports Displays</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-num">24 / 7</div>
+        <div class="hero-stat-label">Open Non-Stop</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMING STATIONS SECTION -->
+  <section class="section-container" id="stations-section">
+    <div class="section-header">
+      <span class="section-tag">COMPUTING STATIONS</span>
+      <h2 class="section-title">GAMING RIGS & BOOTHS</h2>
+    </div>
+
+    <!-- Zone Filter Tabs -->
+    <div class="filter-tabs" id="zone-filter-tabs">
+      <button class="filter-btn active" data-zone="all">All Stations (30)</button>
+      <button class="filter-btn" data-zone="VIP Cyber Lounge">VIP Lounge (8)</button>
+      <button class="filter-btn" data-zone="Tournament Arena">Tournament Arena (8)</button>
+      <button class="filter-btn" data-zone="Streaming Booth">Streaming Booth (4)</button>
+      <button class="filter-btn" data-zone="Standard Zone">Standard Zone (10)</button>
+    </div>
+
+    <!-- Station Grid -->
+    <div class="station-grid" id="customer-stations-grid">
+      <!-- Dynamic via JS -->
+    </div>
+  </section>
+
+  <!-- PC PACKAGES SECTION -->
+  <section class="section-container" id="packages-section" style="background: rgba(0, 240, 255, 0.02); border-radius: var(--radius-lg);">
+    <div class="section-header">
+      <span class="section-tag">RATES & PASSES</span>
+      <h2 class="section-title">GAMING PACKAGES</h2>
+    </div>
+
+    <div class="packages-grid" id="customer-packages-grid">
+      <!-- Dynamic via JS -->
+    </div>
+  </section>
+
+  <!-- PRODUCTS & FOOD CORNER -->
+  <section class="section-container" id="products-section">
+    <div class="section-header">
+      <span class="section-tag">SEAT DELIVERY & GEAR</span>
+      <h2 class="section-title">CYBER CAFE & ACCESSORIES</h2>
+    </div>
+
+    <div class="filter-tabs" id="product-category-tabs">
+      <button class="filter-btn active" data-cat="all">All Products</button>
+      <button class="filter-btn" data-cat="food">Hot Food & Snacks</button>
+      <button class="filter-btn" data-cat="drinks">Energy & Drinks</button>
+      <button class="filter-btn" data-cat="accessories">Gaming Accessories</button>
+    </div>
+
+    <div class="products-grid" id="customer-products-grid">
+      <!-- Dynamic via JS -->
+    </div>
+  </section>
+
+  <!-- PROMOTIONS & EVENTS SECTION -->
+  <section class="section-container" id="promos-section">
+    <div class="section-header">
+      <span class="section-tag">SPECIAL DEALS</span>
+      <h2 class="section-title">ACTIVE PROMOTIONS & CODES</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;" id="customer-promos-grid">
+      <!-- Dynamic via JS -->
+    </div>
+  </section>
+
+  <!-- LOCATION & CONTACT SECTION -->
+  <section class="section-container" id="contact-section">
+    <div class="cyber-card" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; padding: 40px;">
+      <div>
+        <span class="section-tag">FIND VENS COMSHOP</span>
+        <h3 class="font-display" style="font-size: 1.8rem; color:#fff; margin-bottom: 15px;">LOCATION & HOURS</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          📍 777 Cyber Matrix Plaza, Tech Boulevard, Sector 7<br>
+          📞 Phone: +63 917 888 8888 / (02) 8921-VENS<br>
+          📧 Email: support@venscomshop.ph<br>
+          🕒 Operating Hours: <strong>24/7 Open Non-Stop</strong>
+        </p>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-cyber btn-cyber-secondary" onclick="showToast('Google Map route copied!', 'info')">
+            📍 GET DIRECTION MAP
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <span class="section-tag">SUPPORT & FEEDBACK</span>
+        <h3 class="font-display" style="font-size: 1.5rem; color:#fff; margin-bottom: 15px;">SEND US A MESSAGE</h3>
+        <form id="contact-form" onsubmit="event.preventDefault(); showToast('Message Sent! Staff will assist you shortly.', 'success'); this.reset();">
+          <div class="cyber-input-group">
+            <label>Gamer Name / User ID</label>
+            <input type="text" class="cyber-input" placeholder="e.g. Alex Mercer" required>
+          </div>
+          <div class="cyber-input-group">
+            <label>Message / Special Request</label>
+            <textarea class="cyber-textarea" rows="3" placeholder="Ask about tournament hosting, hardware specs..." required></textarea>
+          </div>
+          <button type="submit" class="btn-cyber btn-cyber-primary" style="width: 100%;">
+            ✉️ TRANSMIT MESSAGE
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="cyber-footer">
+    <div class="footer-grid">
+      <div>
+        <h4 class="font-display text-cyan" style="font-size: 1.2rem; margin-bottom: 12px;">VENS COMSHOP</h4>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">
+          Premier Cyber Gaming Lounge & Computer Shop Management System. Designed for high-fps gamers, content creators, and esports teams.
+        </p>
+      </div>
+      <div>
+        <h5 class="font-sub" style="color: #fff; margin-bottom: 12px;">QUICK NAVIGATION</h5>
+        <ul style="list-style:none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; color: var(--text-secondary);">
+          <li><a href="#stations-section" style="color: inherit; text-decoration:none;">Gaming Stations</a></li>
+          <li><a href="#packages-section" style="color: inherit; text-decoration:none;">Rate Packages</a></li>
+          <li><a href="#products-section" style="color: inherit; text-decoration:none;">Food & Drinks</a></li>
+          <li><a href="#promos-section" style="color: inherit; text-decoration:none;">Promotions</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-sub" style="color: #fff; margin-bottom: 12px;">SYSTEM MODULES</h5>
+        <ul style="list-style:none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; color: var(--text-secondary);">
+          <li><a href="StationStaffInterface.html" style="color: var(--cyan);">🖥️ Floor Staff Monitor</a></li>
+          <li><a href="Cashier.html" style="color: var(--cyan);">💳 Cashier POS Portal</a></li>
+          <li><a href="admin.html" style="color: var(--cyan);">⚡ Admin Management</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 20px;">
+      © 2026 Vens ComShop — All Rights Reserved. Built with Modern Cyber UI Architecture.
+    </div>
+  </footer>
+
+  <!-- FLOATING CART BUTTON -->
+  <button class="cart-float-btn" onclick="openCartModal()">
+    🛒 SEAT CART <span class="cart-badge" id="cart-count">0</span>
+  </button>
+
+  <!-- PC RESERVATION MODAL -->
+  <div class="cyber-modal-overlay" id="reserve-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">🖥️ RESERVE A GAMING STATION</h3>
+        <button class="cyber-modal-close" data-close-modal="reserve-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body">
+        <form id="reservation-form">
+          <div class="cyber-input-group">
+            <label>Customer Name</label>
+            <input type="text" id="res-cust-name" class="cyber-input" placeholder="e.g. Alex Mercer" required>
+          </div>
+          <div class="cyber-input-group">
+            <label>Phone / Contact Number</label>
+            <input type="tel" id="res-cust-phone" class="cyber-input" placeholder="+63 917 000 0000" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="cyber-input-group">
+              <label>Select Station</label>
+              <select id="res-pc-select" class="cyber-select" required></select>
+            </div>
+            <div class="cyber-input-group">
+              <label>Package / Pass</label>
+              <select id="res-pkg-select" class="cyber-select" required></select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="cyber-input-group">
+              <label>Reservation Date</label>
+              <input type="date" id="res-date" class="cyber-input" required>
+            </div>
+            <div class="cyber-input-group">
+              <label>Start Time</label>
+              <input type="time" id="res-time" class="cyber-input" value="18:00" required>
+            </div>
+          </div>
+
+          <div class="cyber-input-group">
+            <label>Payment Method</label>
+            <select id="res-payment-method" class="cyber-select">
+              <option value="GCash">GCash Instant</option>
+              <option value="Maya">Maya Pay</option>
+              <option value="Cash">Cash on Counter</option>
+            </select>
+          </div>
+
+          <div class="tracker-box" style="margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-family: var(--font-display);">
+              <span>ESTIMATED TOTAL:</span>
+              <span class="text-cyan font-bold" id="res-total-display">₱25</span>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-cyber btn-cyber-primary" style="width: 100%; margin-top: 10px;">
+            ✅ CONFIRM RESERVATION & PAY
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP CART / SEAT CHECKOUT MODAL -->
+  <div class="cyber-modal-overlay" id="cart-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">🛒 YOUR FOOD & GEAR ORDER</h3>
+        <button class="cyber-modal-close" data-close-modal="cart-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body">
+        <div id="cart-items-list" style="margin-bottom: 20px;">
+          <!-- Dynamic cart items -->
+        </div>
+
+        <form id="cart-checkout-form" onsubmit="handleCartCheckout(event)">
+          <div class="cyber-input-group">
+            <label>Deliver To Station Number</label>
+            <select id="cart-station-select" class="cyber-select" required></select>
+          </div>
+          <div class="cyber-input-group">
+            <label>Gamer Name</label>
+            <input type="text" id="cart-cust-name" class="cyber-input" placeholder="e.g. Gamer at Seat" required>
+          </div>
+          <div class="cyber-input-group">
+            <label>Payment Method</label>
+            <select id="cart-payment-select" class="cyber-select">
+              <option value="Cash">Cash to Seat Floor Staff</option>
+              <option value="GCash">GCash QR</option>
+              <option value="Maya">Maya QR</option>
+            </select>
+          </div>
+
+          <div class="tracker-box" style="margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 1.2rem;">
+              <span>ORDER TOTAL:</span>
+              <span class="text-green font-bold" id="cart-total-display">₱0</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-cyber btn-cyber-green" style="width:100%; margin-top:10px;">
+            🚀 SUBMIT ORDER TO SEAT
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE SESSION TRACKER MODAL -->
+  <div class="cyber-modal-overlay" id="tracker-modal">
+    <div class="cyber-modal-box">
+      <div class="cyber-modal-header">
+        <h3 class="cyber-modal-title">⏱️ SESSION & ORDER TRACKER</h3>
+        <button class="cyber-modal-close" data-close-modal="tracker-modal">&times;</button>
+      </div>
+      <div class="cyber-modal-body">
+        <div class="cyber-input-group">
+          <label>Select Your Station Code (e.g. PC-01 to PC-30)</label>
+          <div style="display: flex; gap: 10px;">
+            <select id="tracker-pc-select" class="cyber-select" style="flex:1;"></select>
+            <button class="btn-cyber btn-cyber-primary" onclick="lookupSessionTracker()">CHECK</button>
+          </div>
+        </div>
+
+        <div id="tracker-result-area" style="margin-top: 20px;">
+          <!-- Dynamic tracker result -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Core -->
+  <script src="js/comshop-data.js"></script>
+  <script src="js/comshop-ui.js"></script>
+
+  <script>
+    // Customer Page State
+    let cart = []; // [{ product, qty }]
+    let activeZoneFilter = 'all';
+    let activeCategoryFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStations();
+      renderPackages();
+      renderProducts();
+      renderPromos();
+      updateHeroStats();
+      populateDropdowns();
+
+      // Set default reservation date to today
+      document.getElementById('res-date').value = new Date().toISOString().split('T')[0];
+
+      // Event Listeners
+      window.addEventListener('comshop-data-updated', () => {
+        renderStations();
+        renderProducts();
+        updateHeroStats();
+        populateDropdowns();
+      });
+
+      window.addEventListener('comshop-timer-tick', () => {
+        updateActiveTimersOnGrid();
+      });
+
+      // Zone filter click
+      document.getElementById('zone-filter-tabs').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          document.querySelectorAll('#zone-filter-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeZoneFilter = e.target.getAttribute('data-zone');
+          renderStations();
+        }
+      });
+
+      // Product Category filter click
+      document.getElementById('product-category-tabs').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+          document.querySelectorAll('#product-category-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeCategoryFilter = e.target.getAttribute('data-cat');
+          renderProducts();
+        }
+      });
+
+      // Reservation price calculator change
+      document.getElementById('res-pkg-select').addEventListener('change', updateReservationPrice);
+      document.getElementById('res-pc-select').addEventListener('change', updateReservationPrice);
+
+      // Reservation Submit
+      document.getElementById('reservation-form').addEventListener('submit', handleReservationSubmit);
+    });
+
+    function updateHeroStats() {
+      const stations = window.VensStore.getStations();
+      const activeCount = stations.filter(s => s.status === 'active').length;
+      document.getElementById('stat-active-pcs').innerText = `${activeCount} / ${stations.length}`;
+    }
+
+    function renderStations() {
+      const grid = document.getElementById('customer-stations-grid');
+      let stations = window.VensStore.getStations();
+
+      if (activeZoneFilter !== 'all') {
+        stations = stations.filter(s => s.zone === activeZoneFilter);
+      }
+
+      grid.innerHTML = stations.map(st => {
+        let badgeClass = 'badge-available';
+        let statusText = 'AVAILABLE';
+
+        if (st.status === 'active') {
+          badgeClass = 'badge-occupied';
+          statusText = st.activeSession ? window.VensStore.formatTime(st.activeSession.remainingSeconds) : 'IN USE';
+        } else if (st.status === 'reserved') {
+          badgeClass = 'badge-reserved';
+          statusText = 'RESERVED';
+        } else if (st.status === 'maintenance') {
+          badgeClass = 'badge-maintenance';
+          statusText = 'OFFLINE';
+        }
+
+        return `
+          <div class="station-card">
+            <div class="station-card-top">
+              <div class="pc-code">${st.code}</div>
+              <span class="cyber-badge ${badgeClass}" id="st-badge-${st.code}">${statusText}</span>
+            </div>
+            <div style="font-size: 0.8rem; font-family: var(--font-sub); color: var(--cyan); margin-bottom: 10px; font-weight: 700;">
+              ${st.zone}
+            </div>
+            <ul class="pc-specs-list">
+              <li><span>🎮 GPU:</span> ${st.specs.gpu}</li>
+              <li><span>⚡ CPU:</span> ${st.specs.cpu}</li>
+              <li><span>🧠 RAM:</span> ${st.specs.ram}</li>
+              <li><span>🖥️ Monitor:</span> ${st.specs.monitor}</li>
+            </ul>
+            <div class="station-card-footer">
+              <div class="station-rate">₱${st.ratePerHour}<span style="font-size: 0.75rem; color: var(--text-muted);">/hr</span></div>
+              ${st.status === 'maintenance' ? 
+                `<button class="btn-cyber btn-cyber-secondary" style="opacity: 0.5;" disabled>LOCKED</button>` : 
+                `<button class="btn-cyber btn-cyber-primary" onclick="quickReservePC('${st.code}')">RESERVE</button>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateActiveTimersOnGrid() {
+      const stations = window.VensStore.getStations();
+      stations.forEach(st => {
+        const badge = document.getElementById(`st-badge-${st.code}`);
+        if (badge && st.status === 'active' && st.activeSession) {
+          badge.innerText = window.VensStore.formatTime(st.activeSession.remainingSeconds);
+        }
+      });
+    }
+
+    function renderPackages() {
+      const grid = document.getElementById('customer-packages-grid');
+      const pkgs = window.VensStore.getPackages();
+
+      grid.innerHTML = pkgs.map(p => `
+        <div class="package-card ${p.recommended ? 'recommended' : ''}">
+          ${p.badge ? `<span class="package-badge">${p.badge}</span>` : ''}
+          <h3 class="font-display" style="font-size: 1.4rem; color: #fff;">${p.name}</h3>
+          <div style="font-size: 0.85rem; color: var(--cyan); font-family: var(--font-sub); font-weight: 700;">${p.zone}</div>
+          <div class="package-price">₱${p.price} <span>/ ${p.hours} Hours</span></div>
+          ${p.savings ? `<div style="font-size: 0.8rem; color: var(--green); font-weight: bold;">⚡ ${p.savings}</div>` : ''}
+          <ul class="package-features">
+            ${p.features.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+          <button class="btn-cyber ${p.recommended ? 'btn-cyber-primary' : 'btn-cyber-secondary'}" onclick="selectPackageForRes('${p.id}')">
+            CHOOSE THIS PASS
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('customer-products-grid');
+      let products = window.VensStore.getProducts();
+
+      if (activeCategoryFilter !== 'all') {
+        products = products.filter(p => p.category === activeCategoryFilter);
+      }
+
+      grid.innerHTML = products.map(p => `
+        <div class="product-card">
+          <div class="product-icon">${p.image}</div>
+          <div class="product-title">${p.name}</div>
+          <div class="product-desc">${p.description}</div>
+          <div class="product-footer">
+            <div class="product-price">₱${p.price}</div>
+            <button class="btn-cyber btn-cyber-primary" onclick="addToCart('${p.id}')">
+              + ADD TO SEAT
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPromos() {
+      const grid = document.getElementById('customer-promos-grid');
+      const promos = window.VensStore.getPromos();
+
+      grid.innerHTML = promos.map(pr => `
+        <div class="cyber-card" style="border-left: 4px solid var(--cyan);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span class="font-display text-cyan font-bold" style="font-size: 1.2rem;">${pr.code}</span>
+            <span class="cyber-badge badge-active">${pr.discount}</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">${pr.description}</p>
+          <button class="btn-cyber btn-cyber-secondary" style="width: 100%; font-size: 0.8rem;" onclick="navigator.clipboard.writeText('${pr.code}'); showToast('Promo Code ${pr.code} Copied!', 'success');">
+            📋 COPY PROMO CODE
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function populateDropdowns() {
+      const stations = window.VensStore.getStations();
+      const packages = window.VensStore.getPackages();
+
+      const pcSelect = document.getElementById('res-pc-select');
+      const cartPcSelect = document.getElementById('cart-station-select');
+      const trackPcSelect = document.getElementById('tracker-pc-select');
+
+      pcSelect.innerHTML = stations.map(s => `<option value="${s.code}">${s.code} (${s.zone} — ₱${s.ratePerHour}/hr)</option>`).join('');
+      cartPcSelect.innerHTML = stations.map(s => `<option value="${s.code}">${s.code} (${s.zone})</option>`).join('');
+      trackPcSelect.innerHTML = stations.map(s => `<option value="${s.code}">${s.code}</option>`).join('');
+
+      const pkgSelect = document.getElementById('res-pkg-select');
+      pkgSelect.innerHTML = packages.map(p => `<option value="${p.id}">${p.name} — ₱${p.price} (${p.hours} hrs)</option>`).join('');
+    }
+
+    // Reservation Handlers
+    function openReserveModal() {
+      const user = window.VensStore ? window.VensStore.getCurrentUser() : null;
+      if (!user) {
+        if (confirm("You need to Sign In or Register to book a PC reservation. Would you like to Sign In now?")) {
+          window.location.href = 'login.html?redirect=customer.html&msg=Sign+in+or+register+to+book+a+PC+reservation';
+        }
+        return;
+      }
+      if (document.getElementById('res-cust-name') && !document.getElementById('res-cust-name').value) {
+        document.getElementById('res-cust-name').value = user.name || '';
+      }
+      if (document.getElementById('res-cust-phone') && !document.getElementById('res-cust-phone').value) {
+        document.getElementById('res-cust-phone').value = user.phone || '';
+      }
+      window.openCyberModal('reserve-modal');
+      updateReservationPrice();
+    }
+
+    function quickReservePC(pcCode) {
+      document.getElementById('res-pc-select').value = pcCode;
+      openReserveModal();
+    }
+
+    function selectPackageForRes(pkgId) {
+      document.getElementById('res-pkg-select').value = pkgId;
+      openReserveModal();
+    }
+
+    function updateReservationPrice() {
+      const pkgId = document.getElementById('res-pkg-select').value;
+      const pkg = window.VensStore.getPackages().find(p => p.id === pkgId);
+      if (pkg) {
+        document.getElementById('res-total-display').innerText = window.formatCurrency(pkg.price);
+      }
+    }
+
+    function handleReservationSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('res-cust-name').value;
+      const phone = document.getElementById('res-cust-phone').value;
+      const pcCode = document.getElementById('res-pc-select').value;
+      const pkgId = document.getElementById('res-pkg-select').value;
+      const date = document.getElementById('res-date').value;
+      const time = document.getElementById('res-time').value;
+
+      const pkg = window.VensStore.getPackages().find(p => p.id === pkgId);
+      const st = window.VensStore.getStations().find(s => s.code === pcCode);
+
+      const res = window.VensStore.createReservation({
+        customerName: name,
+        customerPhone: phone,
+        pcCode: pcCode,
+        zone: st ? st.zone : 'Standard',
+        date: date,
+        startTime: time,
+        durationHours: pkg ? pkg.hours : 1,
+        totalAmount: pkg ? pkg.price : 25
+      });
+
+      window.closeCyberModal('reserve-modal');
+      window.showToast(`Reservation Confirmed! Code: ${res.code} for ${pcCode}`, 'success');
+      document.getElementById('reservation-form').reset();
+    }
+
+    // Cart System
+    function addToCart(productId) {
+      const prod = window.VensStore.getProducts().find(p => p.id === productId);
+      if (!prod) return;
+
+      const existing = cart.find(c => c.product.id === productId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ product: prod, qty: 1 });
+      }
+
+      updateCartUI();
+      window.showToast(`Added ${prod.name} to Cart`, 'success');
+    }
+
+    function updateCartUI() {
+      const totalItems = cart.reduce((sum, c) => sum + c.qty, 0);
+      document.getElementById('cart-count').innerText = totalItems;
+
+      const cartList = document.getElementById('cart-items-list');
+      let totalPrice = 0;
+
+      if (cart.length === 0) {
+        cartList.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 20px;">Your cart is empty. Add food or gear!</div>`;
+      } else {
+        cartList.innerHTML = cart.map((item, idx) => {
+          const itemTotal = item.product.price * item.qty;
+          totalPrice += itemTotal;
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <div style="font-family:var(--font-sub); font-weight:700; color:#fff;">${item.product.image} ${item.product.name}</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">₱${item.product.price} x ${item.qty}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="filter-btn" style="padding: 2px 8px;" onclick="changeCartQty(${idx}, -1)">-</button>
+                <span>${item.qty}</span>
+                <button type="button" class="filter-btn" style="padding: 2px 8px;" onclick="changeCartQty(${idx}, 1)">+</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('cart-total-display').innerText = window.formatCurrency(totalPrice);
+    }
+
+    function changeCartQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    function openCartModal() {
+      const user = window.VensStore ? window.VensStore.getCurrentUser() : null;
+      if (user && document.getElementById('cart-cust-name') && !document.getElementById('cart-cust-name').value) {
+        document.getElementById('cart-cust-name').value = user.name;
+      }
+      updateCartUI();
+      window.openCyberModal('cart-modal');
+    }
+
+    function handleCartCheckout(e) {
+      e.preventDefault();
+      if (cart.length === 0) {
+        window.showToast('Cart is empty!', 'error');
+        return;
+      }
+
+      const pcCode = document.getElementById('cart-station-select').value;
+      const custName = document.getElementById('cart-cust-name').value;
+      const paymentMethod = document.getElementById('cart-payment-select').value;
+
+      const orderItems = cart.map(c => ({
+        productId: c.product.id,
+        name: c.product.name,
+        price: c.product.price,
+        qty: c.qty
+      }));
+
+      const totalPrice = cart.reduce((sum, c) => sum + (c.product.price * c.qty), 0);
+
+      const ord = window.VensStore.createOrder({
+        stationCode: pcCode,
+        customerName: custName,
+        items: orderItems,
+        total: totalPrice,
+        paymentMethod: paymentMethod
+      });
+
+      cart = [];
+      updateCartUI();
+      window.closeCyberModal('cart-modal');
+      window.showToast(`Order #${ord.orderNo} Sent to Seat ${pcCode}! Staff preparing food.`, 'success');
+    }
+
+    // Active Session & Order Tracker
+    function openTrackerModal() {
+      window.openCyberModal('tracker-modal');
+      lookupSessionTracker();
+    }
+
+    function lookupSessionTracker() {
+      const pcCode = document.getElementById('tracker-pc-select').value;
+      const st = window.VensStore.getStations().find(s => s.code === pcCode);
+      const orders = window.VensStore.getOrders().filter(o => o.stationCode === pcCode);
+
+      const resultArea = document.getElementById('tracker-result-area');
+
+      if (!st) {
+        resultArea.innerHTML = `<div style="color:var(--red);">Station not found.</div>`;
+        return;
+      }
+
+      let sessionHTML = '';
+      if (st.status === 'active' && st.activeSession) {
+        sessionHTML = `
+          <div class="tracker-box">
+            <div style="font-size:0.85rem; color:var(--cyan); font-family:var(--font-sub); font-weight:700;">ACTIVE PC SESSION</div>
+            <div style="font-family:var(--font-display); font-size:1.5rem; color:#fff; margin:5px 0;">${st.code} — ${st.activeSession.customerName}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+              <div>Package: <strong>${st.activeSession.packageName}</strong></div>
+              <div style="font-family:var(--font-mono); font-size:1.4rem; color:var(--green); font-weight:700;" id="tracker-timer-display">
+                ${window.VensStore.formatTime(st.activeSession.remainingSeconds)}
+              </div>
+            </div>
+            <button class="btn-cyber btn-cyber-primary" style="width:100%; margin-top:15px;" onclick="extendSeatTime('${st.code}')">
+              + EXTEND SESSION (+1 HOUR)
+            </button>
+          </div>
+        `;
+      } else {
+        sessionHTML = `
+          <div class="tracker-box" style="border-color: var(--border-subtle);">
+            <div style="color:var(--text-muted);">No active gaming session on ${st.code} right now.</div>
+          </div>
+        `;
+      }
+
+      let ordersHTML = '';
+      if (orders.length > 0) {
+        ordersHTML = `
+          <div style="font-weight:700; color:#fff; font-family:var(--font-sub); margin-bottom:10px;">ACTIVE SEAT ORDERS:</div>
+          ${orders.map(o => `
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:12px; border-radius:var(--radius-sm); margin-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                <strong>Order #${o.orderNo}</strong>
+                <span class="cyber-badge badge-active">${o.status.toUpperCase()}</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;">
+                ${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')} — Total: ₱${o.total}
+              </div>
+            </div>
+          `).join('')}
+        `;
+      } else {
+        ordersHTML = `<div style="font-size:0.85rem; color:var(--text-muted);">No food/snack orders for this seat.</div>`;
+      }
+
+      resultArea.innerHTML = sessionHTML + ordersHTML;
+    }
+
+    function extendSeatTime(pcCode) {
+      if (window.VensStore.extendSession(pcCode, 60, 'Cash')) {
+        window.showToast(`Extended 1 Hour for ${pcCode}!`, 'success');
+        lookupSessionTracker();
+      }
+    }
+  </script>
+</body>
+</html>
